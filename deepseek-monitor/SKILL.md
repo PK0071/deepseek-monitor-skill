@@ -1,94 +1,89 @@
 ---
 name: deepseek-monitor
-description: Set up Windows desktop floating window showing real-time DeepSeek token usage & balance. Use when user wants to monitor DeepSeek API consumption, check dashboard data, or fix expired platform token.
+description: Set up or fix Windows desktop floating window for real-time DeepSeek token usage monitoring. Use when user asks about DeepSeek usage display, token tracking, platform balance check, or expired platform token refresh.
+version: 1.1
 ---
 
-# DeepSeek Usage Monitor
+# DeepSeek Usage Monitor (V1.1)
 
-Windows desktop floating window that displays real-time DeepSeek API usage data from `platform.deepseek.com`, synced with the official dashboard.
+Windows desktop floating window for DeepSeek API usage monitoring. Data synced with platform.deepseek.com dashboard.
 
-## When to use
+## When to trigger
 
-- User asks to monitor/setup/fix DeepSeek token usage display
-- Floating window shows 0 or error — re-run setup
-- Platform token expired — walk through refresh procedure
+- User mentions "deepseek浮窗", "token监控", "用量显示"
+- Floating window shows zeros or errors
+- Platform token expired — walk through refresh
+- "本月消费多少钱" — show monthly cost
 
 ## Quick start
 
+Double-click `scripts/run.bat`
+
+## V1.1 field layout
+
 ```
-double-click: run.bat
+DeepSeek 用量监控          x
+──────────────────────────
+      2026-05-14
+
+余额:          82.50 CNY
+本月消费:      6.54 CNY
+
+v4-pro
+  输入(命中):   6070.8万  60,707,840
+  输入(未命中): 98.8万    987,742
+  输出:         29.6万    296,222
+
+v4-flash
+  输入(命中):   207.8万   2,078,080
+  输入(未命中): 11.0万    110,074
+  输出:         1.6万     16,319
 ```
 
-## Setup checklist
+## Setup
 
-### 1. API Key (`config.ini` → `api_key`)
+### config.ini
 
-Get from https://platform.deepseek.com → API Keys. This key calls `/user/balance` for account balance.
+```ini
+[deepseek]
+api_key = sk-your-key-here
+platform_token = your-platform-token-here
+```
 
-### 2. Platform Token (`config.ini` → `platform_token`)
+### Getting platform_token
 
-This is the dashboard auth token that accesses usage data. It EXPIRES after several days.
-
-**How to get it:**
-1. Open Chrome, go to https://platform.deepseek.com and login
-2. Press `F12` → **Network** tab
-3. Navigate to **Usage** page (用量管理)
-4. In Network filter, search: `usage/amount`
-5. Click the request → **Headers** tab
-6. Find `authorization: Bearer pGWqIKiv...`
-7. Copy the token (after `Bearer `) into `config.ini` → `platform_token`
-
-### 3. Files
-
-All files in `tools/token-float-window/`:
-| File | Purpose |
-|------|---------|
-| `run.bat` | Launch real mode (production) |
-| `run-demo.bat` | Launch with sample data |
-| `TokenMonitor.ps1` | PowerShell WPF floating window |
-| `config.ini` | API key + platform token |
-| `fix_encoding.ps1` | Save TokenMonitor.ps1 with UTF-8 BOM (if Chinese garbled) |
-
-### 4. Requirements
-
-- Windows 10/11 (PowerShell + WPF built-in, no install needed)
-- Valid DeepSeek account with API key
-
-## Display fields
-
-| Row | API Source | Description |
-|-----|-----------|-------------|
-| 余额 | `/user/balance` | Account balance in CNY |
-| 输入(命中) | `PROMPT_CACHE_HIT_TOKEN` | Cached input tokens (discounted ~90%) |
-| 输入(未命中) | `PROMPT_CACHE_MISS_TOKEN` | New input tokens (full price) |
-| 输出 | `RESPONSE_TOKEN` | Output tokens |
-| 今日合计 | Sum of above | Total tokens today |
-
-Data refreshes every 60 seconds from `platform.deepseek.com/api/v0/usage/amount`.
-
-## Platform token refresh procedure
-
-When the floating window shows no data or hangs, the `platform_token` has likely expired.
-
-1. Open Chrome → https://platform.deepseek.com → login
-2. `F12` → **Network** tab → clear existing entries
-3. Click **Usage** in the sidebar
-4. Filter network requests: `amount`
+1. Chrome → login to platform.deepseek.com
+2. `F12` → **Network** tab
+3. Click **Usage** in sidebar
+4. Filter: `amount`
 5. Click the `usage/amount?month=X&year=2026` request
-6. Copy `authorization: Bearer <token>` header value
-7. Update `config.ini`:
-   ```ini
-   platform_token = <paste_new_token_here>
-   ```
-8. Restart: double-click `run.bat`
+6. Copy `authorization: Bearer xxx` header value
+7. Paste as `platform_token` in config.ini
+
+## Token expiry refresh
+
+When window shows all zeros:
+
+1. Login platform.deepseek.com
+2. F12 → Network → Usage page → filter `amount`
+3. Copy new `authorization: Bearer xxx`
+4. Update `config.ini` → restart `run.bat`
+
+## Pricing (V1.1 — 2.5-zhe promotion)
+
+| Model | Type | CNY / 1M tokens |
+|-------|------|----------------|
+| v4-pro | cache hit | ¥0.025 |
+| v4-pro | cache miss | ¥3.00 |
+| v4-pro | output | ¥6.00 |
+| v4-flash | cache hit | ¥0.02 |
+| v4-flash | cache miss | ¥1.00 |
+| v4-flash | output | ¥2.00 |
 
 ## Troubleshooting
 
-**Chinese characters garbled (乱码):**
-Run `powershell -ExecutionPolicy Bypass -File fix_encoding.ps1` then restart.
+**Chinese garbled (乱码):** Run `to_utf16.ps1` or re-save TokenMonitor.ps1 as UTF-8 BOM.
 
-**Window not visible:**
-Check Win+Tab to see if window exists but off-screen. Set `$window.WindowStartupLocation = "CenterScreen"` in TokenMonitor.ps1.
+**All zeros:** platform_token expired. Follow refresh procedure.
 
-**All zeros:**
-`platform_token` is expired — follow refresh procedure above.
+**Window not visible:** Change `CenterScreen` to `Manual` and set explicit coordinates.

@@ -10,53 +10,57 @@
 
 ### What is this?
 
-A Windows desktop floating window that monitors your DeepSeek API usage in real-time. It pulls data directly from DeepSeek's official dashboard API — the same numbers you see when you log into platform.deepseek.com.
+A Windows desktop floating window that monitors your DeepSeek API usage in real-time. Data comes directly from DeepSeek's official dashboard API — identical to what you see at platform.deepseek.com. Zero dependencies, double-click `run.bat` to start.
 
-No installation required. Just double-click `run.bat`.
+### Changelog
 
-### Features
+**V1.1 (2026-05-14)**
+- Separate v4-pro and v4-flash token breakdown
+- Big-unit display: shows "123.4万" or "1.2亿" alongside precise numbers
+- Monthly cost (本月消费) calculated from official 2.5-zhe pricing
+- Correct pricing: v4-pro ¥3/¥6 per M tokens, cache hit ¥0.025/M; v4-flash ¥1/¥2, cache hit ¥0.02/M
+- Compact layout: auto-fit height, no wasted space
+- Date display below title
+- Balance & cost moved above model breakdown
+- 60-second DispatcherTimer refresh (WPF-native, no thread issues)
+- UTF-16 LE encoding for Windows PowerShell compatibility
 
-| Feature | Detail |
-|---------|--------|
-| Always on top | Floating window stays visible above other apps |
-| Drag to move | Click anywhere on the window and drag |
-| Right-click menu | Refresh now / Toggle always-on-top / Exit |
-| Auto-refresh | Updates every 60 seconds from DeepSeek dashboard |
-| Chinese UI | All labels in Chinese, matches dashboard terminology |
-| Zero dependencies | Uses Windows built-in PowerShell + WPF |
+**V1.0 (2026-05-13)**
+- Initial release: balance + token display from platform.deepseek.com API
 
 ### Display Fields
 
 | Row | Source | Description |
 |-----|--------|-------------|
+| Date | Local | Current date (YYYY-MM-DD) |
 | 余额 | `/user/balance` API | Account balance in CNY |
-| 输入(命中) | `PROMPT_CACHE_HIT_TOKEN` | Cached input tokens — billed at ~10% of full price |
-| 输入(未命中) | `PROMPT_CACHE_MISS_TOKEN` | New input tokens — billed at full input price |
-| 输出 | `RESPONSE_TOKEN` | Output/generated tokens |
-| 今日合计 | Sum of all above | Total tokens consumed today |
+| 本月消费 | Calculated from pricing | Monthly cost (2.5-zhe promotion) |
+| v4-pro 输入(命中) | `PROMPT_CACHE_HIT_TOKEN` | Cached input — ~0.025 CNY/M |
+| v4-pro 输入(未命中) | `PROMPT_CACHE_MISS_TOKEN` | New input — 3.00 CNY/M |
+| v4-pro 输出 | `RESPONSE_TOKEN` | Output — 6.00 CNY/M |
+| v4-flash * | Same as above | Flash pricing: 1/2 CNY per M |
+| * Flash rows may show 0 if not used | | |
 
 ### Setup
 
-1. Get your API key from https://platform.deepseek.com → API Keys
-2. Get your platform token:
-   - Login to platform.deepseek.com in Chrome
-   - Press `F12` → **Network** tab
-   - Click **Usage** in the sidebar
-   - Filter requests: `amount`
-   - Click the request, copy `authorization: Bearer xxx` header value
+1. Get API key: https://platform.deepseek.com → API Keys
+2. Get platform token:
+   - Chrome → platform.deepseek.com → login
+   - `F12` → **Network** tab → click **Usage** page
+   - Filter: `amount` → copy `authorization: Bearer xxx`
 3. Edit `scripts/config.ini`:
    ```ini
    [deepseek]
-   api_key = sk-your-key-here
-   platform_token = your-platform-token-here
+   api_key = sk-your-key
+   platform_token = your-token
    ```
 4. Double-click `scripts/run.bat`
 
 ### Token Expiry
 
-The `platform_token` expires after a few days. When the window shows zeros:
+Platform token expires after days. When data shows zeros:
 1. Login to platform.deepseek.com
-2. `F12` → Network → click Usage page
+2. `F12` → Network → Usage page → filter `amount`
 3. Copy new `authorization: Bearer xxx` header
 4. Update `config.ini` → restart `run.bat`
 
@@ -68,7 +72,7 @@ npx skills add PK0071/deepseek-monitor-skill@deepseek-monitor -g
 
 ### Requirements
 
-- Windows 10 or 11
+- Windows 10/11 (PowerShell + WPF built-in)
 - DeepSeek API account
 
 ---
@@ -77,64 +81,59 @@ npx skills add PK0071/deepseek-monitor-skill@deepseek-monitor -g
 
 ### 这是什么？
 
-一个 Windows 桌面悬浮窗，实时监控你的 DeepSeek API 用量。数据直接从 DeepSeek 官方后台 API 拉取，和你在 platform.deepseek.com 后台看到的数据完全一致。
+Windows 桌面悬浮窗，实时监控 DeepSeek API 用量。数据直接从 DeepSeek 官方后台 API 拉取，与 platform.deepseek.com 后台数据完全一致。零依赖，双击 `run.bat` 即用。
 
-无需安装任何东西，双击 `run.bat` 即可运行。
+### 更新日志
 
-### 功能特性
+**V1.1 (2026-05-14)**
+- v4-pro 和 v4-flash 分开显示各自 token 用量
+- 大单位显示：如 "6070.8万"、"1.2亿"，后跟精确数字
+- 本月消费：按官方 2.5 折活动价精确计算
+- 定价修正：v4-pro ¥3/¥6 每百万 token, 缓存命中 ¥0.025/M
+- 紧凑布局：窗口高度自适应内容，无多余空白
+- 日期显示在标题下方居中
+- 余额/消费移到模型明细上方
+- DispatcherTimer 60 秒刷新（WPF 原生，无线程问题）
+- UTF-16 LE 编码，Windows PowerShell 完美兼容中文
 
-| 功能 | 说明 |
-|------|------|
-| 始终置顶 | 浮窗始终悬浮在其他窗口之上 |
-| 拖拽移动 | 鼠标按住浮窗任意位置拖动 |
-| 右键菜单 | 手动刷新 / 取消/恢复置顶 / 退出 |
-| 自动刷新 | 每 60 秒从 DeepSeek 后台拉取最新数据 |
-| 中文界面 | 大字体中文标签，与后台术语一致 |
-| 零依赖 | 纯 PowerShell + WPF，Windows 自带 |
+**V1.0 (2026-05-13)**
+- 初始版本：余额 + 当日 token 展示
 
 ### 显示字段
 
 | 字段 | 数据来源 | 说明 |
 |------|---------|------|
-| 余额 | `/user/balance` 接口 | DeepSeek 账户实时余额（人民币） |
-| 输入(命中) | `PROMPT_CACHE_HIT_TOKEN` | 缓存命中的输入 token，约 1 折计费 |
-| 输入(未命中) | `PROMPT_CACHE_MISS_TOKEN` | 未命中缓存的输入 token，按全价计费 |
-| 输出 | `RESPONSE_TOKEN` | 模型生成的输出 token |
-| 今日合计 | 以上三项之和 | 今日消耗的全部 token |
+| 日期 | 本地 | 当天日期 (YYYY-MM-DD) |
+| 余额 | `/user/balance` 接口 | 账户实时余额 (CNY) |
+| 本月消费 | 定价表计算 | 当月累计消费 (2.5折活动) |
+| v4-pro 输入(命中) | `PROMPT_CACHE_HIT_TOKEN` | 缓存命中 — ¥0.025/M |
+| v4-pro 输入(未命中) | `PROMPT_CACHE_MISS_TOKEN` | 新输入 — ¥3.00/M |
+| v4-pro 输出 | `RESPONSE_TOKEN` | 输出 — ¥6.00/M |
+| v4-flash * | 同上 | Flash 定价: ¥1/¥2 每M |
+| * Flash 行未使用则显示 0 | | |
 
 ### 配置步骤
 
-1. 获取 API Key：打开 https://platform.deepseek.com → API Keys
-2. 获取 Platform Token（Dashboard 鉴权令牌）：
-   - Chrome 打开 https://platform.deepseek.com 并登录
-   - 按 `F12` → **Network（网络）** 标签
-   - 点击左侧菜单 **Usage（用量管理）**
-   - Network 过滤栏搜索：`amount`
-   - 点击请求 → **Headers** → 找到 `authorization: Bearer xxx`
-   - 复制 `Bearer` 后面那串 token
+1. 获取 API Key：platform.deepseek.com → API Keys
+2. 获取 Platform Token：
+   - Chrome 登录 platform.deepseek.com
+   - `F12` → **Network** → 点击 **Usage** 页面
+   - 过滤 `amount` → 复制 `authorization: Bearer xxx`
 3. 编辑 `scripts/config.ini`：
    ```ini
    [deepseek]
-   api_key = sk-你的api-key
-   platform_token = 你的platform-token
+   api_key = sk-你的key
+   platform_token = 你的token
    ```
-4. 双击 `scripts/run.bat` 启动浮窗
+4. 双击 `scripts/run.bat`
 
 ### Token 过期处理
 
-`platform_token` 约几天后过期，浮窗数据会显示 0。刷新步骤：
-
-1. Chrome 登录 platform.deepseek.com
-2. `F12` → Network → 点击 Usage 页面
-3. 搜索 `amount`，复制新的 `authorization: Bearer xxx`
-4. 更新 `config.ini` 中的 `platform_token`
-5. 重启 `run.bat`
-
-### 通过 Skills CLI 安装
-
-```bash
-npx skills add PK0071/deepseek-monitor-skill@deepseek-monitor -g
-```
+Platform token 几天后过期，数据归零时：
+1. 登录 platform.deepseek.com
+2. `F12` → Network → Usage 页面 → 过滤 `amount`
+3. 复制新的 `authorization: Bearer xxx`
+4. 更新 `config.ini` → 重启 `run.bat`
 
 ### 环境要求
 
