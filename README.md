@@ -1,5 +1,7 @@
 # DeepSeek Monitor Skill
 
+![screenshot](https://raw.githubusercontent.com/PK0071/deepseek-monitor-skill/master/images/screenshot.png)
+
 [English](#english) | [中文](#中文)
 
 ---
