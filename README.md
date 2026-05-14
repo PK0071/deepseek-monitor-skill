@@ -28,6 +28,18 @@ Windows desktop floating window for DeepSeek API usage monitoring. Data synced w
 **V1.0 (2026-05-13)**
 - Initial release: balance + token display from platform.deepseek.com API
 
+### Features
+
+- **60-second auto-refresh** from platform.deepseek.com dashboard API
+- **Drag to move** window anywhere on screen
+- **Always on top** by default, toggle via right-click menu
+- **Right-click menu**: manual refresh, topmost toggle, exit
+- **Per-model breakdown**: v4-pro and v4-flash shown separately
+- **Yesterday comparison**: today vs yesterday with colored arrows (green down / red up)
+- **Dual-unit display**: big unit (万/亿) + precise number on each row
+- **Monthly cost**: calculated in real-time from official 2.5-zhe pricing
+- **Zero dependencies**: Windows built-in PowerShell + WPF, no install needed
+
 ### Display Fields
 
 | Row | Source | Description |
@@ -87,6 +99,18 @@ Windows 桌面悬浮窗，实时监控 DeepSeek API 用量。数据与 platform.
 
 **V1.0 (2026-05-13)**
 - 初始版本
+
+### 核心功能
+
+- **60 秒自动刷新**：从 DeepSeek 后台 API 实时拉取
+- **鼠标拖拽**：按住任意位置拖动窗口
+- **始终置顶**：默认悬浮在最前，右键可切换
+- **右键菜单**：手动刷新 / 置顶开关 / 退出
+- **模型分开显示**：v4-pro 和 v4-flash 各自展示
+- **昨日对比**：今日 vs 昨日用量，彩色箭头（绿↓/红↑）
+- **双单位显示**：每行同时显示万/亿 + 精确数字
+- **本月消费**：按官方 2.5 折活动价实时计算
+- **零依赖**：Windows 自带 PowerShell + WPF，无需安装
 
 ### 显示字段
 
