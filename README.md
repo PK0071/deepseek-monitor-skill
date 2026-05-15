@@ -2,7 +2,7 @@
 
 **详细模式 / Detail** | **精简模式 / Compact**  
 --- | ---
-![detail](https://raw.githubusercontent.com/PK0071/deepseek-monitor-skill/master/images/screenshot.png) | ![compact](https://raw.githubusercontent.com/PK0071/deepseek-monitor-skill/master/images/screenshot-compact.png)
+![detail](https://raw.githubusercontent.com/PK0071/deepseek-monitor-skill/master/images/screenshot.png) | ![compact](https://raw.githubusercontent.com/PK0071/deepseek-monitor-skill/master/images/screenshot-compact-v2.png)
 
 [English](#english) | [中文](#中文)
 
