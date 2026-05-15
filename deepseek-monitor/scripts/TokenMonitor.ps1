@@ -1,4 +1,4 @@
-﻿param([switch]$Demo)
+﻿﻿param([switch]$Demo)
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $configIni = Join-Path $scriptDir "config.ini"
@@ -196,8 +196,8 @@ function Val($text, $fg, $size, $bold, $row) {
     $t = New-Object System.Windows.Controls.TextBlock
     $t.Text = $text; $t.Foreground = $fg; $t.FontFamily = "Consolas"
     $t.FontSize = $size; if ($bold) { $t.FontWeight = "Bold" }
-    $t.HorizontalAlignment = "Left"
-    $t.Margin = "0,0,0,0"
+    $t.HorizontalAlignment = "Right"
+    $t.Margin = "0,0,6,0"
     [System.Windows.Controls.Grid]::SetRow($t, $row)
     [System.Windows.Controls.Grid]::SetColumn($t, 1)
     $g.AddChild($t); return $t
@@ -219,17 +219,38 @@ function Center($text, $fg, $size, $row) {
 $tb = New-Object System.Windows.Controls.Grid
 [System.Windows.Controls.Grid]::SetRow($tb, 0)
 [System.Windows.Controls.Grid]::SetColumnSpan($tb, 2)
-@("20","*","20") | % { $c = New-Object System.Windows.Controls.ColumnDefinition; $c.Width = $_; $tb.ColumnDefinitions.Add($c) }
+@("20","*","14","20") | % { $c = New-Object System.Windows.Controls.ColumnDefinition; $c.Width = $_; $tb.ColumnDefinitions.Add($c) }
 $tt = New-Object System.Windows.Controls.TextBlock
 $tt.Text = "DeepSeek 用量监控"; $tt.Foreground = "#cdd6f4"
 $tt.FontFamily = "Consolas"; $tt.FontSize = 9; $tt.FontWeight = "Bold"
 $tt.HorizontalAlignment = "Center"
 [System.Windows.Controls.Grid]::SetColumn($tt, 1); $tb.AddChild($tt) | Out-Null
+# Toggle compact/detail button
+$script:expanded = $true
+$btnToggle = New-Object System.Windows.Controls.TextBlock
+$btnToggle.Text = [char]0x25B2; $btnToggle.Foreground = "#f9e2af"; $btnToggle.FontFamily = "Consolas"
+$btnToggle.FontSize = 9; $btnToggle.FontWeight = "Bold"; $btnToggle.HorizontalAlignment = "Right"
+$btnToggle.VerticalAlignment = "Center"; $btnToggle.Cursor = "Hand"; $btnToggle.ToolTip = "Toggle compact/detail"
+[System.Windows.Controls.Grid]::SetColumn($btnToggle, 2)
+$detailRowIdx = @(4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17)
+# Store original heights for collapsible rows
+$dtHeights = @{}
+foreach ($ri in $detailRowIdx) { $dtHeights[$ri] = $g.RowDefinitions[$ri].Height }
+$btnToggle.Add_MouseLeftButtonDown({
+    $script:expanded = -not $script:expanded
+    $btnToggle.Text = if ($script:expanded) { [char]0x25B2 } else { [char]0x25BC }
+    foreach ($ri in $detailRowIdx) {
+        $vis = if ($script:expanded) { 'Visible' } else { 'Collapsed' }
+        $g.Children | Where-Object { [System.Windows.Controls.Grid]::GetRow($_) -eq $ri } | % { $_.Visibility = $vis }
+        $g.RowDefinitions[$ri].Height = if ($script:expanded) { $dtHeights[$ri] } else { [System.Windows.GridLength]::new(0) }
+    }
+})
+$tb.AddChild($btnToggle) | Out-Null
 $xx = New-Object System.Windows.Controls.TextBlock
 $xx.Text = "x"; $xx.Foreground = "#f38ba8"; $xx.FontFamily = "Consolas"
 $xx.FontSize = 11; $xx.FontWeight = "Bold"; $xx.HorizontalAlignment = "Right"
 $xx.VerticalAlignment = "Center"; $xx.Cursor = "Hand"; $xx.ToolTip = "Close"
-[System.Windows.Controls.Grid]::SetColumn($xx, 2); $xx.Add_MouseLeftButtonDown({ $w.Close() }); $tb.AddChild($xx) | Out-Null
+[System.Windows.Controls.Grid]::SetColumn($xx, 3); $xx.Add_MouseLeftButtonDown({ $w.Close() }); $tb.AddChild($xx) | Out-Null
 $g.AddChild($tb) | Out-Null
 
 # Row 1: Divider
@@ -285,8 +306,8 @@ $w.Add_KeyDown({ param($s,$e) if ($e.Key -eq 'Escape') { $w.Close() } })
 
 function Update-Display {
     $s = Get-Summary
-    $lblBal.Text    = "{0:F2} CNY" -f $s.balance
-    $lblCost.Text   = "{0:F2} CNY" -f $s.month_cost
+    $lblBal.Text    = ("{0:F2} CNY" -f $s.balance).PadLeft(23)
+    $lblCost.Text   = ("{0:F2} CNY" -f $s.month_cost).PadLeft(23)
     $proCache.Text  = Fmt $s.pro_cache
     $proIn.Text     = Fmt $s.pro_in
     $proOut.Text    = Fmt $s.pro_out

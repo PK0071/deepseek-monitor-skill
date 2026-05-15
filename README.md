@@ -12,6 +12,11 @@ Windows desktop floating window for DeepSeek API usage monitoring. Data synced w
 
 ### Changelog
 
+**V1.3 (2026-05-15)**
+- Compact/detail toggle: click ▲/▼ to switch between full view and mini view (balance + today only)
+- Compact mode collapses all hidden rows with zero spacing
+- CNY values padded to align with token number column
+
 **V1.2 (2026-05-14)**
 - Yesterday comparison: auto-compares today vs yesterday token usage with percentage + colored arrow (green down / red up)
 - Fixed two-column grid layout: all labels left-aligned, all values consistently positioned
@@ -83,6 +88,11 @@ npx skills add PK0071/deepseek-monitor-skill@deepseek-monitor -g
 Windows 桌面悬浮窗，实时监控 DeepSeek API 用量。数据与 platform.deepseek.com 后台完全一致，零依赖，双击 `run.bat` 即用。
 
 ### 更新日志
+
+**V1.3 (2026-05-15)**
+- 精简/详细模式切换：点击 ▲/▼ 在全视图和迷你视图（仅余额+今日合计）间切换
+- 精简模式隐藏行零间距压缩
+- CNY 数值左补空格，与 token 数字列对齐
 
 **V1.2 (2026-05-14)**
 - 昨日对比：自动对比今日 vs 昨日 token 用量，显示百分比 + 彩色箭头（绿↓/红↑）
