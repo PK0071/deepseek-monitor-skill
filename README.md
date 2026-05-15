@@ -1,6 +1,6 @@
 # DeepSeek Monitor Skill
 
-**详细模式 / Detail** | **精简模式 / Compact**
+**详细模式 / Detail** | **精简模式 / Compact**  
 --- | ---
 ![detail](https://raw.githubusercontent.com/PK0071/deepseek-monitor-skill/master/images/screenshot.png) | ![compact](https://raw.githubusercontent.com/PK0071/deepseek-monitor-skill/master/images/screenshot-compact.png)
 
